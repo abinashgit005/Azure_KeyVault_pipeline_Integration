@@ -25,3 +25,39 @@ create a SPN(Service Principle Name) and assign role "Key Vault Secret User"
 Project setting >> Service connection >> choose "Manual" \
 provide "Service Principal Id", "Service principal key", "Tenant_ID" \
 allow for all Pipeline and submit.
+
+Create a simple pipeline as below
+```yaml
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'keyvault'
+    KeyVaultName: 'keyvault051'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+
+- task: CmdLine@2
+  displayName: write secret in to file
+  inputs:
+    script: |
+      echo $(keyvault051)
+            echo $(keyvault051) > secret.txt
+            cat secret.txt
+
+- task: CopyFiles@2
+  inputs:
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+```
