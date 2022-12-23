@@ -21,7 +21,10 @@ create a SPN(Service Principle Name) and assign role "Key Vault Secret User"
 
     ```
 
-3) create a service connection in Dev.azure.com \
+3) create secrets in your KeyVault.
+   ![secrets](snap4.jpg)
+
+4) create a service connection in Dev.azure.com \
 Project setting >> Service connection >> choose "Manual" \
 provide "Service Principal Id", "Service principal key", "Tenant_ID" \
 allow for all Pipeline and submit.
