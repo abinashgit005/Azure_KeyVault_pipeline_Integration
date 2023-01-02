@@ -25,42 +25,45 @@ create a SPN(Service Principle Name) and assign role "Key Vault Secret User"
    ![secrets](snap4.jpg)
 
 4) create a service connection in Dev.azure.com \
-Project setting >> Service connection >> choose "Manual" \
-provide "Service Principal Id", "Service principal key", "Tenant_ID" \
-allow for all Pipeline and submit.
+    Project setting >> Service connection >> choose "Manual" \
+    provide "Service Principal Id", "Service principal key", "Tenant_ID" \
+    allow for all Pipeline and submit.
 
-Create a simple pipeline as below
-```yaml
-trigger:
-- main
+    Create a simple pipeline as below
+    ```yaml
+    trigger:
+    - main
 
-pool:
-  vmImage: ubuntu-latest
+    pool:
+    vmImage: ubuntu-latest
 
-steps:
-- task: AzureKeyVault@2
-  inputs:
-    azureSubscription: 'keyvault'
-    KeyVaultName: 'keyvault051'
-    SecretsFilter: '*'
-    RunAsPreJob: false
+    steps:
+    - task: AzureKeyVault@2
+    inputs:
+        azureSubscription: 'keyvault'
+        KeyVaultName: 'keyvault051'
+        SecretsFilter: '*'
+        RunAsPreJob: false
 
-- task: CmdLine@2
-  displayName: write secret in to file
-  inputs:
-    script: |
-      echo $(keyvault051)
-            echo $(keyvault051) > secret.txt
-            cat secret.txt
+    - task: CmdLine@2
+    displayName: write secret in to file
+    inputs:
+        script: |
+        echo $(keyvault051)
+                echo $(keyvault051) > secret.txt
+                cat secret.txt
 
-- task: CopyFiles@2
-  inputs:
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: CopyFiles@2
+    inputs:
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-```
+    - task: PublishBuildArtifacts@1
+    inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+    ```
+
+5) Run the pipeline and after successfull running you can see 1 Artifact available. You can see the Drop folder from where you can download the secret text file.
+![Artifact_Published](Artifact_Published.jpg)
